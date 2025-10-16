@@ -1,42 +1,61 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+}
+/* Home */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#f_div {
+  width: 450px;
+  height: 220px;
+  border-radius: 20px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  padding: 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+#f_button, #j_button {
+  font-size: 24px;
+  width: 320px;
+  height: 65px;
+  border-radius: 12px;
+  margin: 10px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.3s;
 }
 
-.card {
-  padding: 2em;
+#f_button:hover, #j_button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #6B73FF, #4c00ff);
 }
 
-.read-the-docs {
-  color: #888;
+/* 유도량 */
+
+
+
+
+
+/* 접두어 */
+.prefix-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
 }
+
+

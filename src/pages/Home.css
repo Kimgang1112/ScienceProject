@@ -1,0 +1,48 @@
+/* Home.css */
+
+.home-container {
+  display: flex;
+  flex-direction: column;   /* 위아래 정렬 */
+  align-items: center;      /* 가로 중앙 정렬 */
+  justify-content: center;  /* 세로 중앙 정렬 */
+  height: 100vh;            /* 화면 전체 높이 */
+  background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+  font-family: 'Pretendard', sans-serif;
+}
+
+#title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+#f_div {
+  display: flex;
+  gap: 20px;               /* 버튼 사이 간격 */
+}
+
+#f_button,
+#j_button {
+  padding: 15px 25px;
+  font-size: 18px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  transition: transform 0.2s, background 0.3s;
+}
+
+#f_button:hover,
+#j_button:hover {
+  transform: scale(1.05);  /* 살짝 커지는 효과 */
+  background: linear-gradient(135deg, #6B73FF, #4c00ff);
+}
+
+#f_button:active,
+#j_button:active {
+  transform: scale(0.98);
+}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import InputBox from '../components/InputBox'
+import './YudoConverter.css'
 
 export default function YudoConverter() {
   const [values, setValues] = useState({
@@ -70,7 +71,10 @@ export default function YudoConverter() {
     <div className="yudo-container">
       <h1 id="title">유도량 변환기</h1>
 
+      
+
       <form>
+        <div className='form-left'>
         <InputBox label="시간" name="second" placeholder="초(s)" value={values.second} onChange={handleChange} disabled={!yudoRequired[choice]?.includes('second')} />
         <InputBox label="길이" name="meter" placeholder="미터(m)" value={values.meter} onChange={handleChange} disabled={!yudoRequired[choice]?.includes('meter')} />
         <InputBox label="질량" name="kilogram" placeholder="킬로그램(kg)" value={values.kilogram} onChange={handleChange} disabled={!yudoRequired[choice]?.includes('kilogram')} />
@@ -78,7 +82,9 @@ export default function YudoConverter() {
         <InputBox label="온도" name="kelvin" placeholder="켈빈(K)" value={values.kelvin} onChange={handleChange} disabled />
         <InputBox label="광도" name="candella" placeholder="칸델라(cd)" value={values.candella} onChange={handleChange} disabled />
         <InputBox label="물질량" name="mol" placeholder="몰(mol)" value={values.mol} onChange={handleChange} disabled />
-
+        </div>
+        
+        <div  className='form-right'>
         <label>유도량 선택</label>
         <select onChange={(e) => setChoice(e.target.value)} value={choice}>
           <option value="" disabled>유도량을 선택하세요</option>
@@ -90,9 +96,11 @@ export default function YudoConverter() {
         </select>
 
         <div>
-          <button type="button" onClick={handleResult} className="result">결과가 나오는 버튼</button>
+          <button type="button" onClick={handleResult} className="result">결과</button>
         </div>
         <div className="result_v">{result}</div>
+        </div>
+        
       </form>
     </div>
   )

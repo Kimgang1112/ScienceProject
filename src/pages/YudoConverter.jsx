@@ -64,6 +64,7 @@ export default function YudoConverter() {
     }
 
     setResult(`결과 : ${r} ${unit}`)
+    
   }
 
   return (
@@ -88,7 +89,6 @@ export default function YudoConverter() {
           <option value="3">가속도</option>
           <option value="4">밀도</option>
         </select>
-
         <div>
           <button type="button" onClick={handleResult} className="result">결과가 나오는 버튼</button>
         </div>

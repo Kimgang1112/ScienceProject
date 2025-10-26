@@ -39,6 +39,7 @@ export default function YudoConverter() {
         r = m * m
         unit = 'm²'
         break
+        
       case '1':
         if (!m) return alert('길이 값을 지정해주세요.')
         r = m * m * m

@@ -50,12 +50,13 @@ export default function YudoConverter() {
         r = m / s
         unit = 'm/s'
         break
-        
+
       case '3':
         if (!m || !s) return alert('길이와 시간을 지정해주세요.')
         r = m / (s * s)
         unit = 'm/s²'
         break
+        
       case '4':
         if (!m || !kg) return alert('길이와 질량 값을 지정해주세요.')
         r = kg / (m * m * m)

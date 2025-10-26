@@ -43,7 +43,8 @@ export default function YudoConverter() {
         if (!m) return alert('길이 값을 지정해주세요.')
         r = m * m * m
         unit = 'm³'
-        break
+        
+        break 
       case '2':
         if (!m || !s) return alert('길이와 시간을 지정해주세요.')
         r = m / s
@@ -64,7 +65,7 @@ export default function YudoConverter() {
     }
 
     setResult(`결과 : ${r} ${unit}`)
-    
+
   }
 
   return (

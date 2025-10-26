@@ -43,13 +43,14 @@ export default function YudoConverter() {
         if (!m) return alert('길이 값을 지정해주세요.')
         r = m * m * m
         unit = 'm³'
-        
+
         break 
       case '2':
         if (!m || !s) return alert('길이와 시간을 지정해주세요.')
         r = m / s
         unit = 'm/s'
         break
+        
       case '3':
         if (!m || !s) return alert('길이와 시간을 지정해주세요.')
         r = m / (s * s)

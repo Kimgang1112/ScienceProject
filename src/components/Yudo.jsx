@@ -1,132 +1,197 @@
-import { useState } from "react";
-import "../styles/Yudo.css";
+import { useState, useMemo } from "react";
+import "../styles/Yudo.css"; 
+
+const YUDO_OPTIONS = [
+    { value: "", label: "유도량 선택", required: [], formula: "" },
+    { value: "volume", label: "부피 (m³)", required: ["length"], formula: "부피 = 길이 × 길이 × 길이 (L³)" },
+    { value: "area", label: "넓이 (m²)", required: ["length"], formula: "넓이 = 길이 × 길이 (L²)" }, 
+    { value: "speed", label: "속도 (m/s)", required: ["length", "time"], formula: "속도 = 길이 / 시간 (L/T)" },
+    { value: "density", label: "밀도 (kg/m³)", required: ["mass", "length"], formula: "밀도 = 질량 / 길이³ (M/L³)" },
+    { value: "acceleration", label: "가속도 (m/s²)", required: ["length", "time"], formula: "가속도 = 길이 / 시간² (L/T²)" }, 
+    { value: "force", label: "힘 (N)", required: ["mass", "length", "time"], formula: "힘 = 질량 × 길이 / 시간² (M·L/T²)" }, 
+];
+
+const BASE_UNITS = [
+    { name: "time", label: "시간 (s)" },
+    { name: "length", label: "길이 (m)" },
+    { name: "mass", label: "질량 (kg)" },
+    { name: "current", label: "전류 (A)" },
+    { name: "temperature", label: "온도 (K)" },
+    { name: "luminosity", label: "광도 (cd)" },
+    { name: "mole", label: "물질량 (mol)" },
+];
 
 export default function Yudo() {
-  const [values, setValues] = useState({
-    second: "",
-    meter: "",
-    kilogram: "",
-    ampere: "",
-    kelvin: "",
-    candela: "",
-    mol: ""
-  });
-  const [choice, setChoice] = useState("");
-  const [result, setResult] = useState("");
-
-  const handleChange = (e) => {
-    setValues({
-      ...values,
-      [e.target.name]: parseFloat(e.target.value) || ""
+    const [values, setValues] = useState({
+        time: "", length: "", mass: "", current: "",
+        temperature: "", luminosity: "", mole: "",
     });
-  };
+    const [selectedYudo, setSelectedYudo] = useState(YUDO_OPTIONS[0].value);
 
-  const handleResult = () => {
-    const { second, meter, kilogram, ampere, kelvin, candela, mol } = values;
+    const currentYudoOption = YUDO_OPTIONS.find(o => o.value === selectedYudo) || YUDO_OPTIONS[0];
 
-    if ((["2","3","7"].includes(choice) && !second) ||
-        (["0","1","2","3","4","5","6","7"].includes(choice) && !meter) ||
-        (["4","7"].includes(choice) && !kilogram) ||
-        (["6"].includes(choice) && !ampere) ||
-        (["9"].includes(choice) && !kelvin) ||
-        (["8"].includes(choice) && !candela) ||
-        (["5"].includes(choice) && !mol)) {
-      alert("활성화된 입력칸을 모두 입력해주세요!");
-      return;
-    }
+    const handleChange = (name, value) => {
+        setValues(prev => ({ ...prev, [name]: value }));
+    };
 
-    let value = 0;
-    let unit = "";
+    const calculation = useMemo(() => {
+        if (currentYudoOption.value === "") {
+            return { result: "", formula: "", calculationString: "" };
+        }
 
-    switch (choice) {
-      case "0": value = meter ** 2; unit = "m²"; break;
-      case "1": value = meter ** 3; unit = "m³"; break;
-      case "2": value = meter / second; unit = "m/s"; break;
-      case "3": value = meter / (second ** 2); unit = "m/s²"; break;
-      case "4": value = kilogram / (meter ** 3); unit = "kg/m³"; break;
-      case "5": value = mol / (meter ** 3); unit = "mol/m³"; break;
-      case "6": value = ampere / (meter ** 2); unit = "A/m²"; break;
-      case "7": value = kilogram * (meter ** 2) / (second ** 2); unit = "J (kg·m²/s²)"; break;
-      case "8": value = candela; unit = "cd"; break;
-      case "9": value = kelvin; unit = "K"; break;
-      default: value = ""; unit = "";
-    }
+        const numValues = Object.fromEntries(
+            Object.entries(values).map(([k, v]) => [k, parseFloat(v) || 0])
+        );
 
-    setResult(value !== "" ? `${value} ${unit}` : "");
-  };
+        let calculatedResult = "";
+        let calculationString = "";
+        
+        const requiredInputs = currentYudoOption.required.filter(key => parseFloat(values[key]) > 0).length;
+        const totalRequired = currentYudoOption.required.length;
 
-  const isDisabled = {
-    second: !["2","3","7"].includes(choice),
-    meter: !["0","1","2","3","4","5","6","7"].includes(choice),
-    kilogram: !["4","7"].includes(choice),
-    ampere: !["6"].includes(choice),
-    kelvin: !["9"].includes(choice),
-    candela: !["8"].includes(choice),
-    mol: !["5"].includes(choice)
-  };
+        if (requiredInputs < totalRequired) {
+            calculatedResult = "값을 입력해 주세요.";
+            calculationString = ""; 
+        } else {
+            switch (currentYudoOption.value) {
+                case "volume": {
+                    const resultValue = numValues.length ** 3;
+                    calculatedResult = `${resultValue.toFixed(5).replace(/\.?0+$/, '')} m³`;
+                    calculationString = `${numValues.length} × ${numValues.length} × ${numValues.length} = ${resultValue.toFixed(5).replace(/\.?0+$/, '')}`;
+                    break;
+                }
+                case "area": {
+                    const resultValue = numValues.length ** 2;
+                    calculatedResult = `${resultValue.toFixed(5).replace(/\.?0+$/, '')} m²`;
+                    calculationString = `${numValues.length} × ${numValues.length} = ${resultValue.toFixed(5).replace(/\.?0+$/, '')}`;
+                    break;
+                }
+                case "speed": {
+                    if (numValues.time === 0) {
+                        calculatedResult = "시간은 0이 될 수 없습니다.";
+                        calculationString = `${numValues.length} / ${numValues.time}`;
+                    } else {
+                        const resultValue = numValues.length / numValues.time;
+                        calculatedResult = `${resultValue.toFixed(5).replace(/\.?0+$/, '')} m/s`;
+                        calculationString = `${numValues.length} / ${numValues.time} = ${resultValue.toFixed(5).replace(/\.?0+$/, '')}`;
+                    }
+                    break;
+                }
+                case "density": {
+                    if (numValues.length === 0) {
+                         calculatedResult = "길이는 0이 될 수 없습니다.";
+                         calculationString = `${numValues.mass} / ${numValues.length}³`;
+                    } else {
+                        const resultValue = numValues.mass / (numValues.length ** 3);
+                        calculatedResult = `${resultValue.toFixed(5).replace(/\.?0+$/, '')} kg/m³`;
+                        calculationString = `${numValues.mass} / ${numValues.length}³ = ${resultValue.toFixed(5).replace(/\.?0+$/, '')}`;
+                    }
+                    break;
+                }
+                case "acceleration": {
+                    if (numValues.time === 0) {
+                        calculatedResult = "시간은 0이 될 수 없습니다.";
+                        calculationString = `${numValues.length} / ${numValues.time}²`;
+                    } else {
+                        const resultValue = numValues.length / (numValues.time ** 2);
+                        calculatedResult = `${resultValue.toFixed(5).replace(/\.?0+$/, '')} m/s²`;
+                        calculationString = `${numValues.length} / ${numValues.time}² = ${resultValue.toFixed(5).replace(/\.?0+$/, '')}`;
+                    }
+                    break;
+                }
+                case "force": {
+                    if (numValues.time === 0) {
+                        calculatedResult = "시간은 0이 될 수 없습니다.";
+                        calculatedResult = `${numValues.mass} × ${numValues.length} / ${numValues.time}²`;
+                    } else {
+                        const resultValue = numValues.mass * numValues.length / (numValues.time ** 2);
+                        calculatedResult = `${resultValue.toFixed(5).replace(/\.?0+$/, '')} N`;
+                        calculationString = `${numValues.mass} × ${numValues.length} / ${numValues.time}² = ${resultValue.toFixed(5).replace(/\.?0+$/, '')}`;
+                    }
+                    break;
+                }
+                default:
+                    calculatedResult = "유도량을 선택하세요.";
+            }
+        }
+       
+        
+        return { 
+            result: calculatedResult, 
+            formula: currentYudoOption.formula,
+            calculationString: calculationString 
+        };
+    }, [values, selectedYudo, currentYudoOption.value, currentYudoOption.formula]);
 
-  return (
-    <div className="yudo-wrapper">
-      <div className="yudo-card">
-        <h1 className="yudo-title">유도량 변환기</h1>
+    const handleYudoChange = (e) => {
+        const newYudo = e.target.value;
+        setSelectedYudo(newYudo);
+        
+        const newOption = YUDO_OPTIONS.find(o => o.value === newYudo) || YUDO_OPTIONS[0];
+        const requiredNames = newOption.required;
+        
+        setValues(prev => {
+            const newValues = {};
+            BASE_UNITS.forEach(unit => {
+                newValues[unit.name] = requiredNames.includes(unit.name) ? prev[unit.name] : "";
+            });
+            return newValues;
+        });
+    };
 
-        <div className="input-group">
-          <label>시간 (s)</label>
-          <input type="number" name="second" value={values.second} onChange={handleChange} disabled={isDisabled.second}/>
+    return (
+        <div className="yudo-wrapper">
+            <div className="yudo-card">
+                <h1 className="yudo-title">유도량 변환기</h1>
+
+                <div className="yudo-input-grid">
+                    {BASE_UNITS.map(unit => {
+                        const isDisabled = !currentYudoOption.required.includes(unit.name);
+                        
+                        return (
+                            <div key={unit.name} className="yudo-input-group">
+                                <label htmlFor={`input-${unit.name}`}>{unit.label}</label>
+                                <input
+                                    id={`input-${unit.name}`}
+                                    type="number"
+                                    value={values[unit.name]}
+                                    onChange={(e) => handleChange(unit.name, e.target.value)}
+                                    placeholder={isDisabled ? "유도량 선택 필요" : "값"}
+                                    disabled={isDisabled}
+                                />
+                            </div>
+                        );
+                    })}
+                </div>
+                
+                <div className="yudo-select-group">
+                    <select
+                        className="yudo-select"
+                        value={selectedYudo}
+                        onChange={handleYudoChange}
+                    >
+                        {YUDO_OPTIONS.map(option => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {selectedYudo !== "" && (
+                    <div className="yudo-result-box">
+                        <p className="yudo-formula">{calculation.formula}</p>
+                        
+                        {calculation.calculationString && (
+                             <p className="yudo-calculation-string">{calculation.calculationString}</p>
+                        )}
+                        
+                        <p className="yudo-calculated-result"> 
+                            {calculation.result}
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
-
-        <div className="input-group">
-          <label>길이 (m)</label>
-          <input type="number" name="meter" value={values.meter} onChange={handleChange} disabled={isDisabled.meter}/>
-        </div>
-
-        <div className="input-group">
-          <label>질량 (kg)</label>
-          <input type="number" name="kilogram" value={values.kilogram} onChange={handleChange} disabled={isDisabled.kilogram}/>
-        </div>
-
-        <div className="input-group">
-          <label>전류 (A)</label>
-          <input type="number" name="ampere" value={values.ampere} onChange={handleChange} disabled={isDisabled.ampere}/>
-        </div>
-
-        <div className="input-group">
-          <label>온도 (K)</label>
-          <input type="number" name="kelvin" value={values.kelvin} onChange={handleChange} disabled={isDisabled.kelvin}/>
-        </div>
-
-        <div className="input-group">
-          <label>광도 (cd)</label>
-          <input type="number" name="candela" value={values.candela} onChange={handleChange} disabled={isDisabled.candela}/>
-        </div>
-
-        <div className="input-group">
-          <label>물질량 (mol)</label>
-          <input type="number" name="mol" value={values.mol} onChange={handleChange} disabled={isDisabled.mol}/>
-        </div>
-
-        <select className="yudo-select" onChange={(e) => setChoice(e.target.value)}>
-          <option value="">유도량 선택</option>
-          <option value="0">넓이</option>
-          <option value="1">부피</option>
-          <option value="2">속력</option>
-          <option value="3">가속도</option>
-          <option value="4">밀도</option>
-          <option value="5">농도</option>
-          <option value="6">전류 밀도</option>
-          <option value="7">에너지</option>
-          <option value="8">광도</option>
-          <option value="9">온도</option>
-        </select>
-
-        <button className="yudo-btn" onClick={handleResult}>결과 보기</button>
-
-        {result && (
-          <div className="result-box">
-            📌 <span className="result-text">{result}</span>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+    );
 }

@@ -1,103 +1,138 @@
 .yudo-wrapper {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #e9f3ff, #cfe7ff);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; 
+    padding: 10vh 20px 20px 20px; 
+    background: linear-gradient(135deg, #e9f3ff, #cfe7ff);
 }
 
 .yudo-card {
-  width: 380px;
-  padding: 28px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
-  animation: fadeIn 0.8s ease-in-out;
+    width: 500px; 
+    max-width: 100%;
+    padding: 20px 30px 30px 30px; 
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
+    font-family: Arial, sans-serif;
+    margin: 0; 
 }
 
 .yudo-title {
-  text-align: center;
-  margin-bottom: 18px;
-  font-size: 1.5rem;
-  font-weight: 700;
+    text-align: center;
+    margin-top: 5px; 
+    margin-bottom: 15px; 
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1a2b4e;
 }
 
-.input-group {
-  display: flex;
-  flex-direction: column;
-  margin: 10px 0;
+.yudo-input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 20px; 
+    margin-bottom: 5px;
 }
 
-.input-group label {
-  font-size: 0.9rem;
-  margin-bottom: 4px;
+.yudo-input-group, .yudo-select-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; 
+    width: 100%;
 }
 
-.input-group input {
-  padding: 8px;
-  border-radius: 8px;
-  border: 1.8px solid rgba(0,0,0,0.25);
-  outline: none;
-  transition: 0.2s;
+.yudo-input-group label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #3f51b5;
+    margin-bottom: 2px;
 }
 
-.input-group input:focus {
-  border-color: #0073ff;
-  box-shadow: 0 0 6px rgba(0,115,255,0.45);
+.yudo-input-group input {
+    width: 100%;
+    padding: 12px 14px; 
+    border-radius: 8px;
+    border: 1.8px solid rgba(0, 0, 0, 0.25);
+    outline: none;
+    transition: 0.2s;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.7);
+    box-sizing: border-box;
+    height: 48px; 
+}
+
+.yudo-input-group input:focus {
+    border-color: #0073ff;
+    box-shadow: 0 0 6px rgba(0, 115, 255, 0.45);
+}
+
+.yudo-input-group input:disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    border-color: #ced4da;
 }
 
 .yudo-select {
-  width: 100%;
-  padding: 10px;
-  margin: 18px 0;
-  border-radius: 10px;
-  border: 2px solid rgba(0,0,0,0.25);
-  background: rgba(255,255,255,0.55);
-  cursor: pointer;
-  transition: 0.25s;
+    width: 100%;
+    padding: 12px 14px; 
+    border-radius: 8px;
+    border: 1.8px solid rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a2b4e;
+    box-sizing: border-box;
+    height: 48px; 
 }
 
-.yudo-select:hover {
-  border-color: #0073ff;
+.yudo-result-box {
+    margin-top: 15px; 
+    padding: 8px 15px; 
+    text-align: center; 
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px; 
+    border: 1.5px solid #0073ff; 
+    
+    box-sizing: border-box; 
+    width: 100%; 
+    margin: 15px 0 0 0; 
+    
+    box-shadow: 0 3px 8px rgba(0, 115, 255, 0.1); 
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 50px; 
 }
 
-.yudo-btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.6);
-  font-weight: 600;
-  font-size: 1.05rem;
-  cursor: pointer;
-  transition: 0.25s;
-  color: #005ad9;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+.yudo-formula {
+    font-size: 0.8rem; 
+    font-weight: 500; 
+    color: #888; 
+    margin-bottom: 2px; 
+    padding-bottom: 2px; 
+    border-bottom: 1px dashed #d0d0d0; 
+    width: 100%; 
+    text-align: center;
 }
 
-.yudo-btn:hover {
-  transform: translateY(-4px);
-  background: rgba(255,255,255,0.9);
-  box-shadow: 0 8px 24px rgba(0,120,255,0.35);
+.yudo-calculation-string {
+    font-size: 0.9rem; 
+    font-weight: 600; 
+    color: #5a7dff; 
+    margin-bottom: 4px; 
 }
 
-.result-box {
-  margin-top: 18px;
-  padding: 14px;
-  text-align: center;
-  font-size: 1.2rem;
-  font-weight: 800;
-  background: rgba(255,255,255,0.85);
-  border-radius: 10px;
-  border: 2px solid rgba(0,0,0,0.15);
-}
-
-.result-text {
-  font-weight: 800;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+.yudo-calculated-result {
+    font-size: 1.1rem; 
+    font-weight: 700; 
+    color: #1a2b4e;
+    display: block; 
+    margin-top: 4px; 
 }

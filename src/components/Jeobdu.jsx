@@ -60,7 +60,7 @@ export default function Jeobdu() {
         
         <div className="jeobdu-select-row">
             <div className="jeobdu-select-group start-group">
-                <label htmlFor="from-prefix-select" className="jeobdu-select-label from-label">시작 접두어 (FROM)</label>
+                <label htmlFor="from-prefix-select" className="jeobdu-select-label from-label">시작 접두어</label>
                 <select 
                     id="from-prefix-select"
                     className="jeobdu-select"
@@ -75,7 +75,7 @@ export default function Jeobdu() {
                 </select>
             </div>
             <div className="jeobdu-select-group end-group">
-                <label htmlFor="to-prefix-select" className="jeobdu-select-label to-label">목표 접두어 (TO)</label>
+                <label htmlFor="to-prefix-select" className="jeobdu-select-label to-label">목표 접두어</label>
                 <select 
                     id="to-prefix-select"
                     className="jeobdu-select"
@@ -94,7 +94,7 @@ export default function Jeobdu() {
         <div className="jeobdu-input-row">
             
             <div className="jeobdu-input-group">
-                <label htmlFor="input-from">변환할 값 (VALUE)</label>
+                <label htmlFor="input-from">변환할 값</label>
                 <input
                   id="input-from"
                   type="number"
@@ -109,7 +109,7 @@ export default function Jeobdu() {
             </div>
 
             <div className="jeobdu-input-group">
-                <label htmlFor="input-to">변환된 값 (RESULT)</label>
+                <label htmlFor="input-to">변환된 값</label>
                 <input
                   id="input-to"
                   type="text"

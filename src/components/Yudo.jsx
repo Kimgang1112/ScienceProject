@@ -3,12 +3,12 @@ import "../styles/Yudo.css";
 
 const YUDO_OPTIONS = [
     { value: "", label: "유도량 선택", required: [], formula: "" },
-    { value: "volume", label: "부피 (m³)", required: ["length"], formula: "부피 = 길이 × 길이 × 길이 (L³)" },
-    { value: "area", label: "넓이 (m²)", required: ["length"], formula: "넓이 = 길이 × 길이 (L²)" }, 
-    { value: "speed", label: "속도 (m/s)", required: ["length", "time"], formula: "속도 = 길이 / 시간 (L/T)" },
-    { value: "density", label: "밀도 (kg/m³)", required: ["mass", "length"], formula: "밀도 = 질량 / 길이³ (M/L³)" },
-    { value: "acceleration", label: "가속도 (m/s²)", required: ["length", "time"], formula: "가속도 = 길이 / 시간² (L/T²)" }, 
-    { value: "force", label: "힘 (N)", required: ["mass", "length", "time"], formula: "힘 = 질량 × 길이 / 시간² (M·L/T²)" }, 
+    { value: "volume", label: "부피 (m³)", required: ["length"], formula: "부피 = 길이 × 길이 × 길이" },
+    { value: "area", label: "넓이 (m²)", required: ["length"], formula: "넓이 = 길이 × 길이" }, 
+    { value: "speed", label: "속도 (m/s)", required: ["length", "time"], formula: "속도 = 길이 / 시간" },
+    { value: "density", label: "밀도 (kg/m³)", required: ["mass", "length"], formula: "밀도 = 질량 / 길이³" },
+    { value: "acceleration", label: "가속도 (m/s²)", required: ["length", "time"], formula: "가속도 = 길이 / 시간²" }, 
+    { value: "force", label: "힘 (N)", required: ["mass", "length", "time"], formula: "힘 = 질량 × 길이 / 시간²" }, 
 ];
 
 const BASE_UNITS = [

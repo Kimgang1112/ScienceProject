@@ -19,7 +19,6 @@ const PREFIX_MAP = {
 };
 
 const PREFIX_OPTIONS = [
-  { value: "exa", label: "Exa (E)" }, 
   { value: "peta", label: "Peta (P)" },
   { value: "tera", label: "Tera (T)" },
   { value: "giga", label: "Giga (G)" },

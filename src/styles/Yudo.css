@@ -5,6 +5,7 @@
     align-items: flex-start; 
     padding: 10vh 20px 20px 20px; 
     background: linear-gradient(135deg, #e9f3ff, #cfe7ff);
+    position: relative;
 }
 
 .yudo-card {
@@ -135,4 +136,36 @@
     color: #1a2b4e;
     display: block; 
     margin-top: 4px; 
+}
+
+/* === 홈 네비게이션 버튼 (Yudo.css 및 Jeobdu.css 공통 적용) === */
+.home-nav-button {
+    position: absolute; 
+    top: 25px;
+    left: 25px;
+    
+    font-size: 1rem;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 10px;
+    
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(8px);
+    color: #005ad9;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    transition: 0.2s ease;
+    
+    z-index: 10; 
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-nav-button:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 6px 16px rgba(0, 120, 255, 0.25);
+    color: #0a53c7;
 }

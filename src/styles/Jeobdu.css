@@ -77,8 +77,9 @@
   font-size: 1.05rem;
   font-weight: 600;
   color: #1a2b4e;
-  /* 폭 정렬을 위해 높이를 input과 유사하게 설정 */
   height: 40px; 
+  line-height: 20px;
+  box-sizing: border-box;
 }
 .jeobdu-select:hover { border-color: #0073ff; }
 
@@ -117,6 +118,8 @@
     align-items: center;
     justify-content: center;
     padding: 0 10px;
+    position: relative;
+    top: 10px;
 }
 
 .jeobdu-arrow-icon {

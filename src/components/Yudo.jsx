@@ -1,14 +1,19 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Yudo.css"; 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHome } from "@fortawesome/free-solid-svg-icons";
 
 const YUDO_OPTIONS = [
     { value: "", label: "유도량 선택", required: [], formula: "" },
-    { value: "volume", label: "부피 (m³)", required: ["length"], formula: "부피 = 길이 × 길이 × 길이 (L³)" },
-    { value: "area", label: "넓이 (m²)", required: ["length"], formula: "넓이 = 길이 × 길이 (L²)" }, 
-    { value: "speed", label: "속도 (m/s)", required: ["length", "time"], formula: "속도 = 길이 / 시간 (L/T)" },
-    { value: "density", label: "밀도 (kg/m³)", required: ["mass", "length"], formula: "밀도 = 질량 / 길이³ (M/L³)" },
-    { value: "acceleration", label: "가속도 (m/s²)", required: ["length", "time"], formula: "가속도 = 길이 / 시간² (L/T²)" }, 
-    { value: "force", label: "힘 (N)", required: ["mass", "length", "time"], formula: "힘 = 질량 × 길이 / 시간² (M·L/T²)" }, 
+    { value: "volume", label: "부피 (m³)", required: ["length"], formula: "부피 = 길이 × 길이 × 길이" },
+    { value: "area", label: "넓이 (m²)", required: ["length"], formula: "넓이 = 길이 × 길이" }, 
+    { value: "speed", label: "속도 (m/s)", required: ["length", "time"], formula: "속도 = 길이 / 시간" },
+    { value: "density", label: "밀도 (kg/m³)", required: ["mass", "length"], formula: "밀도 = 질량 / 길이³" },
+    { value: "acceleration", label: "가속도 (m/s²)", required: ["length", "time"], formula: "가속도 = 길이 / 시간²" }, 
+    { value: "force", label: "힘 (N)", required: ["mass", "length", "time"], formula: "힘 = 질량 × 길이 / 시간²" }, 
+    { value: "work", label: "일 (J)", required: ["mass", "length", "time"], formula: "일 = 질량 × 길이² / 시간²" },
+    { value: "power", label: "일률 (W)", required: ["mass", "length", "time"], formula: "일률 = 질량 × 길이² / 시간³" },
 ];
 
 const BASE_UNITS = [
@@ -22,6 +27,7 @@ const BASE_UNITS = [
 ];
 
 export default function Yudo() {
+    const navigate = useNavigate();
     const [values, setValues] = useState({
         time: "", length: "", mass: "", current: "",
         temperature: "", luminosity: "", mole: "",
@@ -110,6 +116,28 @@ export default function Yudo() {
                     }
                     break;
                 }
+                case "work": {
+                    if (numValues.time === 0) {
+                        calculatedResult = "시간은 0이 될 수 없습니다.";
+                        calculationString = `${numValues.mass} × ${numValues.length}² / ${numValues.time}²`;
+                    } else {
+                        const resultValue = numValues.mass * (numValues.length ** 2) / (numValues.time ** 2);
+                        calculatedResult = `${resultValue.toFixed(5).replace(/\.?0+$/, '')} J`;
+                        calculationString = `${numValues.mass} × ${numValues.length}² / ${numValues.time}² = ${resultValue.toFixed(5).replace(/\.?0+$/, '')}`;
+                    }
+                    break;
+                }
+                case "power": {
+                    if (numValues.time === 0) {
+                        calculatedResult = "시간은 0이 될 수 없습니다.";
+                        calculationString = `${numValues.mass} × ${numValues.length}² / ${numValues.time}³`;
+                    } else {
+                        const resultValue = numValues.mass * (numValues.length ** 2) / (numValues.time ** 3);
+                        calculatedResult = `${resultValue.toFixed(5).replace(/\.?0+$/, '')} W`;
+                        calculationString = `${numValues.mass} × ${numValues.length}² / ${numValues.time}³ = ${resultValue.toFixed(5).replace(/\.?0+$/, '')}`;
+                    }
+                    break;
+                }
                 default:
                     calculatedResult = "유도량을 선택하세요.";
             }
@@ -141,6 +169,9 @@ export default function Yudo() {
 
     return (
         <div className="yudo-wrapper">
+            <button className="home-nav-button" onClick={() => navigate("/")}>
+                <FontAwesomeIcon icon={faHome} /> 홈
+            </button>
             <div className="yudo-card">
                 <h1 className="yudo-title">유도량 변환기</h1>
 

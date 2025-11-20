@@ -6,6 +6,11 @@ export default function Home() {
 
   return (
     <div className="home">
+      <div id="nav">
+        <div id="signup" onClick={() => navigate("/signup")}>회원가입</div>
+        <div id="login" onClick={() => navigate("/login")}>로그인</div>
+      </div>
+      
       <div className="logo-wrapper">
         <img src="/logo.png" alt="사이트 로고" className="logo" />
         

@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../styles/Login.css";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
@@ -17,34 +20,42 @@ export default function Login() {
     const data = await response.json();
 
     if (data.success) {
-      setMsg("로그인 성공!");
-      localStorage.setItem("loginUser", username); // 로그인 저장
-      window.location.href = "/main"; // 페이지 이동
+      setMsg("✔ 로그인 성공!");
+      setTimeout(() => navigate("/"), 1000);
     } else {
-      setMsg("로그인 실패!");
+      setMsg("❌ 아이디 또는 비밀번호가 올바르지 않습니다.");
     }
   };
 
   return (
-    <div>
-      <h2>로그인</h2>
+    <div className="login-page">
+      <div className="login-box">
+        <h2>로그인</h2>
 
-      <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          placeholder="아이디"
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <br />
-        <input
-          type="password"
-          placeholder="비밀번호"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <br />
-        <button type="submit">로그인</button>
-      </form>
-      <p>{msg}</p>
+        <form onSubmit={handleLogin}>
+          <input
+            type="text"
+            placeholder="아이디"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+
+          <input
+            type="password"
+            placeholder="비밀번호"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button type="submit">시작하기</button>
+        </form>
+
+        <p className="msg">{msg}</p>
+
+        <div className="goto-signup" onClick={() => navigate("/signup")}>
+          계정이 없으신가요? 회원가입 →
+        </div>
+      </div>
     </div>
   );
 }

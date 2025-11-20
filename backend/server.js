@@ -1,16 +1,27 @@
+
+
+
 const express = require("express");
 const mysql = require("mysql2");
 const bcrypt = require("bcrypt");
+const cors = require("cors");
+
+
+
+ 
 const app = express();
+
+
 
 app.use(express.json());
 
+app.use(cors()); 
 
 const db = mysql.createConnection({
-  host: "localhost",
+  host: "127.0.0.1",
   user: "root",
   password: "q1w2e3",
-  database: "mysql-db",
+  database: "logindb",
   port: 3306
 });
 
@@ -34,7 +45,7 @@ app.post("/register", async (req, res) => {
   );
 });
 
-// 로그인 API
+
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 

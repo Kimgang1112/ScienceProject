@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Signup.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightLong, faHome } from "@fortawesome/free-solid-svg-icons";
+
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -43,6 +46,9 @@ export default function Signup() {
 
   return (
     <div className="signup-page">
+      <button className="home-nav-button" onClick={() => navigate("/")}>
+            <FontAwesomeIcon icon={faHome} /> 홈
+      </button>
       <div className="signup-box">
         <h2>회원가입</h2>
 

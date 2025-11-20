@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRightLong, faHome } from "@fortawesome/free-solid-svg-icons";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -29,6 +31,9 @@ export default function Login() {
 
   return (
     <div className="login-page">
+      <button className="home-nav-button" onClick={() => navigate("/")}>
+            <FontAwesomeIcon icon={faHome} /> 홈
+      </button>
       <div className="login-box">
         <h2>로그인</h2>
 

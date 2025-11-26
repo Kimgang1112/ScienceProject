@@ -4,7 +4,7 @@ import "../styles/Login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightLong, faHome } from "@fortawesome/free-solid-svg-icons";
 
-export default function Login() {
+export default function Login({ setIsLoggedIn }) {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,9 +22,11 @@ export default function Login() {
     const data = await response.json();
 
     if (data.success) {
+      setIsLoggedIn(true);
       setMsg("✔ 로그인 성공!");
       setTimeout(() => navigate("/"), 1000);
     } else {
+      setIsLoggedIn(false);
       setMsg("❌ 아이디 또는 비밀번호가 올바르지 않습니다.");
     }
   };

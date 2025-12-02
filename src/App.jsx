@@ -13,7 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/yudo" element={<Yudo />} />
-        <Route path="/jeobdu" element={<Jeobdu />} />
+        <Route path="/jeobdu" element={<Jeobdu isLoggedIn={isLoggedIn}/>} />
         <Route path="/signup" element={<Singup />} />
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
       </Routes>

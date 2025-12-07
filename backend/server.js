@@ -1,35 +1,50 @@
-
-
-
 const express = require("express");
 const mysql = require("mysql2");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 
-
-
- 
 const app = express();
 
-
-
 app.use(express.json());
-
 app.use(cors()); 
 
 const db = mysql.createConnection({
-  host: "10.129.57.173",
-  user: "root",
-  password: "q1w2e3",
-  database: "logindb",
-  port: 3306
+  host: process.env.MYSQLHOST || "10.129.57.173",
+  user: process.env.MYSQLUSER || "root",
+  password: process.env.MYSQLPASSWORD || "q1w2e3",
+  database: process.env.MYSQLDATABASE || "logindb",
+  port: process.env.MYSQLPORT || 3306
 });
 
+// DB 연결 및 테이블 자동 생성
+db.connect((err) => {
+  if (err) {
+    console.error('Database connection failed:', err);
+    return;
+  }
+  console.log('Database connected successfully');
+  
+  // users 테이블 자동 생성
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      username VARCHAR(255) UNIQUE NOT NULL,
+      password VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  
+  db.query(createTableQuery, (err) => {
+    if (err) {
+      console.error('Table creation failed:', err);
+    } else {
+      console.log('Users table ready');
+    }
+  });
+});
 
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
-
- 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   db.query(
@@ -44,7 +59,6 @@ app.post("/register", async (req, res) => {
     }
   );
 });
-
 
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
@@ -68,4 +82,5 @@ app.post("/login", (req, res) => {
   );
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));

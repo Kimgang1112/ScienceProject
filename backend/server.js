@@ -5,45 +5,30 @@ const cors = require("cors");
 
 const app = express();
 
-// CORS preflight 요청을 먼저 처리
-app.options('*', cors());
-
-// 모든 요청에 CORS 허용 (개발 단계용)
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://science-project-bq1o.vercel.app');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  // Preflight 요청은 바로 200 응답
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  
-  next();
-});
-
-app.use(express.json());
+// CORS 설정 (간단하고 확실한 방법)
 app.use(cors({
   origin: 'https://science-project-bq1o.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
+
+app.use(express.json());
 
 // 헬스 체크
 app.get("/", (req, res) => {
   res.json({ 
     status: "Server is running", 
-    timestamp: new Date().toISOString(),
-    cors: "enabled"
+    timestamp: new Date().toISOString()
   });
 });
 
 const db = mysql.createConnection({
-  host: process.env.MYSQLHOST || "10.129.57.173",
-  user: process.env.MYSQLUSER || "root",
-  password: process.env.MYSQLPASSWORD || "q1w2e3",
-  database: process.env.MYSQLDATABASE || "logindb",
-  port: process.env.MYSQLPORT || 3306
+  host: process.env.MYSQLHOST,
+  user: process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQLDATABASE,
+  port: process.env.MYSQLPORT
 });
 
 db.connect((err) => {
@@ -75,6 +60,10 @@ app.post("/register", async (req, res) => {
   console.log('Register request received:', req.body);
   const { username, password } = req.body;
   
+  if (!username || !password) {
+    return res.json({ success: false, message: "아이디와 비밀번호를 입력하세요." });
+  }
+  
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -99,6 +88,10 @@ app.post("/register", async (req, res) => {
 app.post("/login", (req, res) => {
   console.log('Login request received:', req.body);
   const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.json({ success: false });
+  }
 
   db.query(
     "SELECT * FROM users WHERE username = ?",

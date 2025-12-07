@@ -5,19 +5,37 @@ const cors = require("cors");
 
 const app = express();
 
-// CORS를 먼저 설정 (middleware 순서 중요!)
-app.use(cors({
-  origin: 'https://science-project-bq1o.vercel.app',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// CORS preflight 요청을 먼저 처리
+app.options('*', cors());
+
+// 모든 요청에 CORS 허용 (개발 단계용)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://science-project-bq1o.vercel.app');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Preflight 요청은 바로 200 응답
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
 
 app.use(express.json());
+app.use(cors({
+  origin: 'https://science-project-bq1o.vercel.app',
+  credentials: true
+}));
 
-// 헬스 체크 엔드포인트
+// 헬스 체크
 app.get("/", (req, res) => {
-  res.json({ status: "Server is running", timestamp: new Date().toISOString() });
+  res.json({ 
+    status: "Server is running", 
+    timestamp: new Date().toISOString(),
+    cors: "enabled"
+  });
 });
 
 const db = mysql.createConnection({
@@ -28,7 +46,6 @@ const db = mysql.createConnection({
   port: process.env.MYSQLPORT || 3306
 });
 
-// DB 연결 및 테이블 자동 생성
 db.connect((err) => {
   if (err) {
     console.error('Database connection failed:', err);
@@ -114,4 +131,5 @@ app.post("/login", (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
+  console.log('CORS enabled for: https://science-project-bq1o.vercel.app');
 });

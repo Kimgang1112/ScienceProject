@@ -6,7 +6,10 @@ const cors = require("cors");
 const app = express();
 
 app.use(express.json());
-app.use(cors()); 
+app.use(cors({
+  origin: 'https://science-project-bq1o.vercel.app', // Vercel 도메인으로 변경
+  credentials: true
+})); 
 
 const db = mysql.createConnection({
   host: process.env.MYSQLHOST || "10.129.57.173",

@@ -4,6 +4,8 @@ import "../styles/Jeobdu.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightLong, faHome } from "@fortawesome/free-solid-svg-icons";
 
+
+
 const PREFIX_MAP = {
   exa: 1e18, 
   peta: 1e15,
@@ -31,7 +33,7 @@ const PREFIX_OPTIONS = [
   { value: "pico", label: "Pico (p)" }, 
 ];
 
-export default function Jeobdu() {
+export default function Jeobdu({isLoggedIn}) {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
   const [fromPrefix, setFromPrefix] = useState("kilo");
@@ -51,9 +53,11 @@ export default function Jeobdu() {
         return "변환 오류"; 
     }
     
+    // 기본 단위로 변환 후, 목표 단위로 다시 변환
     const baseValue = numValue * fromFactor;
     const result = baseValue / toFactor;
 
+    // 불필요한 후행 0을 제거하고 최대 12자리까지 표시
     return result.toFixed(12).replace(/\.?0+$/, ''); 
   }, [inputValue, fromPrefix, toPrefix]);
 
@@ -66,7 +70,29 @@ export default function Jeobdu() {
       <div className="jeobdu-card">
         <h1 className="jeobdu-title">접두어 변환기</h1>
         
+        {/* isLoggedIn이 true일 때만 설명 섹션 렌더링 */}
+        {isLoggedIn && (
+            <div className="jeobdu-info-section">
+                <h2 className="jeobdu-info-title">🧐 SI 접두어란?</h2>
+                <p>
+                    SI 접두어는 국제단위계(SI)에서 기본 단위의 배수 또는 분수를 나타내기 위해 사용되는 기호입니다. 매우 크거나 작은 수를 간결하게 표현할 수 있게 도와줍니다.
+                </p>
+                <p>예: 10^3m(미터)는 1km (킬로미터)로 표현됩니다.</p>
+                <h3 className="jeobdu-info-subtitle">주요 특징</h3>
+                <ul>
+                    <li>대부분 10^3 또는 10^(-3) 단위로 증감합니다.</li>
+                    <li>접두어는 기본 단위(예: 미터, 그램, 초) 앞에 붙여 사용합니다.</li>
+                    <li>대문자 접두어(P, T, G, M)는 주로 큰 배수(10^6 이상)에 사용됩니다.</li>
+                </ul>
+                <div className="jeobdu-prefix-table-guide">
+                
+                </div>
+            </div>
+        )}
+        
+        {/* --- 변환기 UI 부분은 그대로 유지 --- */}
         <div className="jeobdu-select-row">
+            {/* ... (시작 접두어 선택) ... */}
             <div className="jeobdu-select-group start-group">
                 <label htmlFor="from-prefix-select" className="jeobdu-select-label from-label">시작 접두어</label>
                 <select 
@@ -82,6 +108,7 @@ export default function Jeobdu() {
                     ))}
                 </select>
             </div>
+            {/* ... (화살표 아이콘) ... */}
             <div className="jeobdu-select-group end-group">
                 <label htmlFor="to-prefix-select" className="jeobdu-select-label to-label">목표 접두어</label>
                 <select 

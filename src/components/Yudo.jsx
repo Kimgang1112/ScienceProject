@@ -26,7 +26,21 @@ const BASE_UNITS = [
     { name: "mole", label: "물질량 (mol)" },
 ];
 
-export default function Yudo() {
+const getYudoDescription = (yudoType) => {
+    const descriptions = {
+        volume: "부피는 3차원 공간에서 물체가 차지하는 공간의 크기를 나타내는 유도량입니다. 길이의 세제곱으로 계산되며, SI 단위는 세제곱미터(m³)입니다.",
+        area: "넓이는 2차원 평면에서 도형이 차지하는 면의 크기를 나타내는 유도량입니다. 길이의 제곱으로 계산되며, SI 단위는 제곱미터(m²)입니다.",
+        speed: "속도는 물체의 위치 변화율을 나타내는 유도량입니다. 단위 시간당 이동한 거리로 계산되며, SI 단위는 미터 매 초(m/s)입니다.",
+        density: "밀도는 단위 부피당 질량을 나타내는 유도량입니다. 물질의 특성을 나타내는 중요한 물리량으로, SI 단위는 킬로그램 매 세제곱미터(kg/m³)입니다.",
+        acceleration: "가속도는 속도의 변화율을 나타내는 유도량입니다. 단위 시간당 속도 변화량으로 계산되며, SI 단위는 미터 매 초제곱(m/s²)입니다.",
+        force: "힘은 물체의 운동 상태를 변화시키는 원인이 되는 유도량입니다. 질량과 가속도의 곱으로 정의되며(F=ma), SI 단위는 뉴턴(N)입니다.",
+        work: "일은 힘이 물체를 이동시킬 때 한 일의 양을 나타내는 유도량입니다. 힘과 이동거리의 곱으로 계산되며, SI 단위는 줄(J)입니다.",
+        power: "일률은 단위 시간당 한 일의 양을 나타내는 유도량입니다. 에너지 전환 속도를 의미하며, SI 단위는 와트(W)입니다."
+    };
+    return descriptions[yudoType] || "";
+};
+
+export default function Yudo({isLoggedIn}) {
     const navigate = useNavigate();
     const [values, setValues] = useState({
         time: "", length: "", mass: "", current: "",
@@ -108,7 +122,7 @@ export default function Yudo() {
                 case "force": {
                     if (numValues.time === 0) {
                         calculatedResult = "시간은 0이 될 수 없습니다.";
-                        calculatedResult = `${numValues.mass} × ${numValues.length} / ${numValues.time}²`;
+                        calculationString = `${numValues.mass} × ${numValues.length} / ${numValues.time}²`;
                     } else {
                         const resultValue = numValues.mass * numValues.length / (numValues.time ** 2);
                         calculatedResult = `${resultValue.toFixed(5).replace(/\.?0+$/, '')} N`;
@@ -220,6 +234,13 @@ export default function Yudo() {
                         <p className="yudo-calculated-result"> 
                             {calculation.result}
                         </p>
+
+                        {isLoggedIn && (
+                            <div className="yudo-description">
+                                <h3>유도량 설명</h3>
+                                <p>{getYudoDescription(selectedYudo)}</p>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

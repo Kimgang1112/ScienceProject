@@ -4,6 +4,7 @@ import "../styles/SignUp.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightLong, faHome } from "@fortawesome/free-solid-svg-icons";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -28,19 +29,25 @@ export default function Signup() {
       return;
     }
     setMsg("");
-    const response = await fetch("http://10.129.57.173/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+    
+    try {
+      const response = await fetch(`${API_URL}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      setMsg("🎉 회원가입 성공!");
-      setTimeout(() => navigate("/login"), 1200);
-    } else {
-      setMsg("회원가입 실패 (아이디 중복)");
+      if (data.success) {
+        setMsg("🎉 회원가입 성공!");
+        setTimeout(() => navigate("/login"), 1200);
+      } else {
+        setMsg("회원가입 실패 (아이디 중복)");
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      setMsg("❌ 서버와 연결할 수 없습니다.");
     }
   };
 

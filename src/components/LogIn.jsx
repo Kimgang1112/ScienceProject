@@ -4,6 +4,8 @@ import "../styles/Login.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightLong, faHome } from "@fortawesome/free-solid-svg-icons";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function Login({ setIsLoggedIn }) {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -13,21 +15,26 @@ export default function Login({ setIsLoggedIn }) {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://10.129.57.173:3000/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      setIsLoggedIn(true);
-      setMsg("✔ 로그인 성공!");
-      setTimeout(() => navigate("/"), 1000);
-    } else {
-      setIsLoggedIn(false);
-      setMsg("❌ 아이디 또는 비밀번호가 올바르지 않습니다.");
+      if (data.success) {
+        setIsLoggedIn(true);
+        setMsg("✔ 로그인 성공!");
+        setTimeout(() => navigate("/"), 1000);
+      } else {
+        setIsLoggedIn(false);
+        setMsg("❌ 아이디 또는 비밀번호가 올바르지 않습니다.");
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setMsg("❌ 서버와 연결할 수 없습니다.");
     }
   };
 

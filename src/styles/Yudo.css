@@ -1,5 +1,6 @@
 .yudo-wrapper {
     min-height: 100vh;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: flex-start; 
@@ -7,6 +8,7 @@
     background: linear-gradient(135deg, #e9f3ff, #cfe7ff);
     position: relative;
     overflow-y: auto;
+    box-sizing: border-box;
 }
 
 .yudo-card {

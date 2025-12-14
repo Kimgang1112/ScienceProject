@@ -1,20 +1,17 @@
 const express = require("express");
 const mysql = require("mysql2");
 const bcrypt = require("bcrypt");
-const cors = require("cors");
 
 const app = express();
 
-// CORS preflight 처리를 위한 middleware
+// CORS 설정
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://science-project-bq1o.vercel.app');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
   res.header('Access-Control-Allow-Credentials', 'true');
   
-  // OPTIONS 요청은 즉시 200 응답
   if (req.method === 'OPTIONS') {
-    console.log('OPTIONS request received for:', req.url);
     return res.status(200).end();
   }
   
@@ -23,62 +20,108 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-// 모든 요청 로깅
+// 요청 로깅
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  console.log('Headers:', req.headers);
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
   next();
 });
 
-// 헬스 체크
+// 데이터베이스 연결 상태
+let dbConnected = false;
+
+// 환경변수 확인
+console.log('=== 환경변수 체크 ===');
+console.log('MYSQLHOST:', process.env.MYSQLHOST ? '설정됨' : '누락');
+console.log('MYSQLUSER:', process.env.MYSQLUSER ? '설정됨' : '누락');
+console.log('MYSQLDATABASE:', process.env.MYSQLDATABASE ? '설정됨' : '누락');
+console.log('MYSQLPORT:', process.env.MYSQLPORT ? '설정됨' : '누락');
+console.log('PORT:', process.env.PORT || 3000);
+
+// 헬스 체크 (Railway가 서버 상태 확인용)
 app.get("/", (req, res) => {
   res.json({ 
     status: "Server is running", 
     timestamp: new Date().toISOString(),
-    corsEnabled: true
+    database: dbConnected ? "connected" : "disconnected"
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.json({ 
+    status: "ok",
+    database: dbConnected ? "connected" : "disconnected"
   });
 });
 
 app.get("/test", (req, res) => {
-  res.json({ message: "CORS test successful" });
+  res.json({ message: "CORS 테스트 성공" });
 });
 
-const db = mysql.createConnection({
-  host: process.env.MYSQLHOST,
-  user: process.env.MYSQLUSER,
-  password: process.env.MYSQLPASSWORD,
-  database: process.env.MYSQLDATABASE,
-  port: process.env.MYSQLPORT
-});
+// MySQL 데이터베이스 연결
+let db;
 
-db.connect((err) => {
-  if (err) {
-    console.error('Database connection failed:', err);
-    return;
-  }
-  console.log('Database connected successfully');
-  
-  const createTableQuery = `
-    CREATE TABLE IF NOT EXISTS users (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      username VARCHAR(255) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  
-  db.query(createTableQuery, (err) => {
+try {
+  db = mysql.createConnection({
+    host: process.env.MYSQLHOST,
+    user: process.env.MYSQLUSER,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.MYSQLDATABASE,
+    port: process.env.MYSQLPORT,
+    connectTimeout: 10000 // 10초 타임아웃
+  });
+
+  db.connect((err) => {
     if (err) {
-      console.error('Table creation failed:', err);
-    } else {
-      console.log('Users table ready');
+      console.error('❌ 데이터베이스 연결 실패:', err.message);
+      dbConnected = false;
+      return;
+    }
+    
+    console.log('✅ 데이터베이스 연결 성공');
+    dbConnected = true;
+    
+    // 테이블 생성
+    const createTableQuery = `
+      CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    
+    db.query(createTableQuery, (err) => {
+      if (err) {
+        console.error('❌ 테이블 생성 실패:', err.message);
+      } else {
+        console.log('✅ users 테이블 준비 완료');
+      }
+    });
+  });
+
+  // 연결 에러 처리
+  db.on('error', (err) => {
+    console.error('데이터베이스 에러:', err);
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      dbConnected = false;
     }
   });
-});
 
+} catch (error) {
+  console.error('❌ 데이터베이스 초기화 오류:', error.message);
+  dbConnected = false;
+}
+
+// 회원가입
 app.post("/register", async (req, res) => {
-  console.log('=== REGISTER REQUEST ===');
-  console.log('Body:', req.body);
+  console.log('=== 회원가입 요청 ===');
+  
+  if (!dbConnected) {
+    return res.status(503).json({ 
+      success: false, 
+      message: "데이터베이스 연결이 되지 않았습니다." 
+    });
+  }
   
   const { username, password } = req.body;
   
@@ -97,18 +140,24 @@ app.post("/register", async (req, res) => {
       [username, hashedPassword],
       (err) => {
         if (err) {
-          console.log('Register error:', err);
-          return res.json({ 
+          console.log('회원가입 오류:', err.message);
+          if (err.code === 'ER_DUP_ENTRY') {
+            return res.json({ 
+              success: false, 
+              message: "이미 존재하는 아이디입니다." 
+            });
+          }
+          return res.status(500).json({ 
             success: false, 
-            message: "이미 존재하는 아이디입니다." 
+            message: "회원가입 중 오류가 발생했습니다." 
           });
         }
-        console.log('Register success:', username);
+        console.log('✅ 회원가입 성공:', username);
         res.json({ success: true });
       }
     );
   } catch (error) {
-    console.error('Register error:', error);
+    console.error('회원가입 오류:', error.message);
     res.status(500).json({ 
       success: false, 
       message: "회원가입 중 오류가 발생했습니다." 
@@ -116,14 +165,21 @@ app.post("/register", async (req, res) => {
   }
 });
 
+// 로그인
 app.post("/login", (req, res) => {
-  console.log('=== LOGIN REQUEST ===');
-  console.log('Body:', req.body);
+  console.log('=== 로그인 요청 ===');
+  
+  if (!dbConnected) {
+    return res.status(503).json({ 
+      success: false, 
+      message: "데이터베이스 연결이 되지 않았습니다." 
+    });
+  }
   
   const { username, password } = req.body;
 
   if (!username || !password) {
-    console.log('Missing credentials');
+    console.log('❌ 아이디 또는 비밀번호 누락');
     return res.json({ success: false });
   }
 
@@ -132,19 +188,19 @@ app.post("/login", (req, res) => {
     [username],
     async (err, result) => {
       if (err) {
-        console.error('Database error:', err);
+        console.error('데이터베이스 오류:', err.message);
         return res.json({ success: false });
       }
       
       if (result.length === 0) {
-        console.log('User not found:', username);
+        console.log('❌ 사용자를 찾을 수 없음:', username);
         return res.json({ success: false });
       }
 
       const user = result[0];
       const match = await bcrypt.compare(password, user.password);
 
-      console.log('Login result:', { username, success: match });
+      console.log('로그인 결과:', { username, success: match });
 
       if (match) {
         res.json({ success: true });
@@ -157,23 +213,37 @@ app.post("/login", (req, res) => {
 
 // 404 처리
 app.use((req, res) => {
-  console.log('404 - Route not found:', req.method, req.url);
-  res.status(404).json({ error: 'Route not found' });
+  console.log('404 - 경로를 찾을 수 없음:', req.method, req.url);
+  res.status(404).json({ error: '경로를 찾을 수 없습니다' });
 });
 
 // 에러 처리
 app.use((err, req, res, next) => {
-  console.error('Server error:', err);
-  res.status(500).json({ error: 'Internal server error' });
+  console.error('서버 오류:', err);
+  res.status(500).json({ error: '서버 내부 오류' });
 });
 
+// 서버 시작
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`
 ========================================
-Server running on port ${PORT}
-CORS enabled for: https://science-project-bq1o.vercel.app
-Database: ${process.env.MYSQLDATABASE || 'Not set'}
+✅ 서버가 포트 ${PORT}에서 실행 중입니다
+🌐 CORS 허용: https://science-project-bq1o.vercel.app
+🗄️  데이터베이스: ${process.env.MYSQLDATABASE || '설정되지 않음'}
+📡 상태: ${dbConnected ? '연결됨' : '연결 대기 중'}
 ========================================
   `);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM 신호 수신, 서버 종료 중...');
+  server.close(() => {
+    console.log('서버 종료 완료');
+    if (db) {
+      db.end();
+    }
+    process.exit(0);
+  });
 });
